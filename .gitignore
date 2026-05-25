@@ -11,3 +11,9 @@ env/
 data/*.db
 data/*.sqlite3
 !data/seed_venues.json
+
+_check*.py
+_dbg_*.py
+_page.html
+_render*.py
+_service*.py
