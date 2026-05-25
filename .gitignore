@@ -17,3 +17,5 @@ _dbg_*.py
 _page.html
 _render*.py
 _service*.py
+
+data/seed_events.json
