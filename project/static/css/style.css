@@ -1,0 +1,48 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#map-container {
+  height: calc(100vh - 56px);
+  padding: 0;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+#sidebar {
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+.legend-marker {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.leaflet-popup-content {
+  margin: 8px 12px;
+  font-size: 13px;
+}
+
+.leaflet-popup-content h6 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  #sidebar {
+    height: auto;
+    max-height: 200px;
+  }
+  #map-container {
+    height: calc(100vh - 56px - 200px);
+  }
+}

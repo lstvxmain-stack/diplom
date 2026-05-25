@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Мероприятия Белгородской области{% endblock %}
+{% block content %}
+<div class="container mt-3">
+  <h2><i class="fas fa-calendar-alt"></i> Мероприятия</h2>
+
+  <form class="row g-2 mb-3" method="GET">
+    <div class="col-md-3">
+      <select name="category_id" class="form-select form-select-sm">
+        <option value="">Все категории</option>
+        {% for cat in all_categories %}
+        <option value="{{ cat.id }}" {% if request.args.get('category_id')|string == cat.id|string %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input type="date" name="date_from" class="form-control form-control-sm" placeholder="Дата с" value="{{ request.args.get('date_from', '') }}">
+    </div>
+    <div class="col-md-2">
+      <input type="date" name="date_to" class="form-control form-control-sm" placeholder="Дата по" value="{{ request.args.get('date_to', '') }}">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary btn-sm w-100">Фильтр</button>
+    </div>
+  </form>
+
+  <div class="row">
+    {% for event in events %}
+    <div class="col-md-6 col-lg-4 mb-3">
+      <div class="card h-100 shadow-sm">
+        {% if event.image_url %}
+        <img src="{{ event.image_url }}" class="card-img-top" alt="{{ event.title }}" style="height:140px;object-fit:cover">
+        {% endif %}
+        <div class="card-body">
+          <h6 class="card-title">{{ event.title }}</h6>
+          <p class="card-text small text-muted">
+            <i class="fas fa-map-pin"></i> <a href="{{ url_for('venues.detail', id=event.venue_id) }}">{{ event.venue.name }}</a><br>
+            <i class="fas fa-calendar"></i> {{ event.date_start.strftime('%d.%m.%Y') if event.date_start else '' }}
+            {% if event.time %} | {{ event.time }}{% endif %}<br>
+            {% if event.price %}<i class="fas fa-ruble-sign"></i> {{ event.price }}{% endif %}
+            {% if event.age_rating %} | <span class="badge bg-secondary">{{ event.age_rating }}</span>{% endif %}
+          </p>
+          <a href="{{ url_for('events.detail', id=event.id) }}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+      <div class="alert alert-info">Нет мероприятий по выбранным фильтрам.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

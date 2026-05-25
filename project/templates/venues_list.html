@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Культурные объекты Белгородской области{% endblock %}
+{% block content %}
+<div class="container mt-3">
+  <h2><i class="fas fa-building"></i> Культурно-развлекательные объекты</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <select id="cat-filter" class="form-select form-select-sm" onchange="filterVenues()">
+        <option value="">Все категории</option>
+        {% for cat in all_categories %}
+        <option value="{{ cat.id }}" {% if request.args.get('category_id')|string == cat.id|string %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for venue in venues %}
+    <div class="col-md-6 col-lg-4 mb-3">
+      <div class="card h-100 shadow-sm">
+        {% if venue.image_url %}
+        <img src="{{ venue.image_url }}" class="card-img-top" alt="{{ venue.name }}" style="height:160px;object-fit:cover">
+        {% else %}
+        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center text-white" style="height:160px">
+          <i class="fas fa-building fa-3x"></i>
+        </div>
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ venue.name }}</h5>
+          <p class="card-text text-muted small">
+            <i class="fas fa-tag"></i> {{ venue.category.name }}<br>
+            {% if venue.address %}<i class="fas fa-map-pin"></i> {{ venue.address }}<br>{% endif %}
+            {% if venue.district %}<i class="fas fa-city"></i> {{ venue.district }}{% endif %}
+          </p>
+          <a href="{{ url_for('venues.detail', id=venue.id) }}" class="btn btn-sm btn-primary">Подробнее</a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+      <div class="alert alert-info">Нет объектов для отображения.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterVenues() {
+  const cat = document.getElementById('cat-filter').value;
+  const params = new URLSearchParams(window.location.search);
+  if (cat) params.set('category_id', cat);
+  else params.delete('category_id');
+  window.location.search = params.toString();
+}
+</script>
+{% endblock %}

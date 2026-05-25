@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Культурная карта Белгородской области{% endblock %}
+{% block content %}
+<div class="container-fluid p-0">
+  <div class="row g-0">
+    <div class="col-md-3 col-lg-2 bg-light p-3 border-end" id="sidebar">
+      <h5 class="mb-3"><i class="fas fa-filter"></i> Фильтры</h5>
+
+      <div class="mb-3">
+        <label class="form-label">Поиск</label>
+        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Название объекта...">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Категория</label>
+        <select id="category-filter" class="form-select form-select-sm">
+          <option value="">Все категории</option>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}">{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Район</label>
+        <select id="district-filter" class="form-select form-select-sm">
+          <option value="">Все районы</option>
+          {% for d in districts %}
+          <option value="{{ d }}">{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button id="apply-filters" class="btn btn-primary btn-sm w-100 mb-2">Применить</button>
+      <button id="reset-filters" class="btn btn-outline-secondary btn-sm w-100">Сбросить</button>
+
+      <hr>
+      <h6 class="mb-2">Категории</h6>
+      <div id="legend">
+        {% for cat in categories %}
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:{{ cat.color }}"></span>
+          <small>{{ cat.name }}</small>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-md-9 col-lg-10" id="map-container">
+      <div id="map"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+
+<script>
+const CATEGORIES = {{ categories|tojson }};
+const DISTRICTS = {{ districts|tojson }};
+
+const map = L.map('map', { attributionControl: false }).setView([50.6, 36.6], 9);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '',
+  maxZoom: 18,
+}).addTo(map);
+
+const markers = L.markerClusterGroup({
+  chunkedLoading: true,
+  maxClusterRadius: 50,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+});
+map.addLayer(markers);
+
+const categoryColors = {};
+CATEGORIES.forEach(c => { categoryColors[c.id] = c.color; });
+
+function getColor(categoryId) {
+  return categoryColors[categoryId] || '#3388ff';
+}
+
+function loadMapData() {
+  const params = new URLSearchParams();
+  const catVal = document.getElementById('category-filter').value;
+  const distVal = document.getElementById('district-filter').value;
+  const searchVal = document.getElementById('search-input').value;
+  if (catVal) params.set('category_id', catVal);
+  if (distVal) params.set('district', distVal);
+  if (searchVal) params.set('search', searchVal);
+
+  markers.clearLayers();
+
+  fetch('/api/map-data?' + params.toString())
+    .then(r => r.json())
+    .then(data => {
+      data.forEach(venue => {
+        const color = getColor(venue.category_id);
+        const icon = L.divIcon({
+          html: `<div style="background:${color};width:24px;height:24px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3)"></div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
+          className: '',
+        });
+
+        let popupHtml = `<div style="min-width:200px">
+          <h6 style="margin-bottom:4px"><a href="/venues/${venue.id}">${venue.name}</a></h6>
+          <small class="text-muted">${venue.address || ''}</small>`;
+
+        if (venue.upcoming_events && venue.upcoming_events.length > 0) {
+          popupHtml += `<hr style="margin:6px 0"><strong>Ближайшие:</strong><ul style="margin:4px 0;padding-left:16px">`;
+          venue.upcoming_events.slice(0, 3).forEach(e => {
+            const d = new Date(e.date_start);
+            const dateStr = d.toLocaleDateString('ru-RU', {day:'numeric',month:'long'});
+            popupHtml += `<li><a href="/events/${e.id}" style="text-decoration:none">${e.title}</a> <small class="text-muted">${dateStr}</small></li>`;
+          });
+          popupHtml += `</ul>`;
+        }
+        popupHtml += `<hr style="margin:6px 0"><a href="/venues/${venue.id}" class="btn btn-sm btn-outline-primary">Подробнее</a>`;
+        popupHtml += `</div>`;
+
+        const marker = L.marker([venue.latitude, venue.longitude], { icon });
+        marker.bindPopup(popupHtml);
+        markers.addLayer(marker);
+      });
+    });
+}
+
+document.getElementById('apply-filters').addEventListener('click', loadMapData);
+document.getElementById('reset-filters').addEventListener('click', () => {
+  document.getElementById('category-filter').value = '';
+  document.getElementById('district-filter').value = '';
+  document.getElementById('search-input').value = '';
+  loadMapData();
+});
+document.getElementById('search-input').addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') loadMapData();
+});
+
+loadMapData();
+
+fetch('/static/belgorod_boundary.json')
+  .then(r => r.json())
+  .then(geo => {
+    L.geoJSON(geo, {
+      style: {
+        color: '#e74c3c',
+        weight: 3,
+        opacity: 0.9,
+        fillColor: '#e74c3c',
+        fillOpacity: 0.06,
+      },
+    }).addTo(map);
+  });
+</script>
+{% endblock %}
