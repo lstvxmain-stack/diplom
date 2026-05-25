@@ -1,3 +1,4 @@
+import os
 from project import create_app, db
 from project.models.admin import AdminUser
 from project.models.category import Category
@@ -5,6 +6,7 @@ from project.models.category import Category
 app = create_app()
 
 with app.app_context():
+    os.makedirs(os.path.join(app.root_path, '..', 'data'), exist_ok=True)
     db.create_all()
     if not AdminUser.query.first():
         admin = AdminUser(username="admin")
