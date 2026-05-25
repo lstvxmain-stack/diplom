@@ -24,19 +24,24 @@ def map_data():
         venue_query = venue_query.filter(Venue.name.ilike(f"%{search}%"))
 
     venues = venue_query.all()
+    venue_ids = [v.id for v in venues]
 
     now = datetime.now()
+    upcoming_events = (
+        Event.query
+        .filter(Event.venue_id.in_(venue_ids), Event.date_start >= now)
+        .order_by(Event.venue_id, Event.date_start)
+        .all()
+    )
+
+    events_by_venue = {}
+    for e in upcoming_events:
+        events_by_venue.setdefault(e.venue_id, []).append(e.to_dict())
+
     result = []
     for venue in venues:
-        upcoming = (
-            Event.query.filter_by(venue_id=venue.id)
-            .filter(Event.date_start >= now)
-            .order_by(Event.date_start)
-            .limit(5)
-            .all()
-        )
         venue_dict = venue.to_dict()
-        venue_dict["upcoming_events"] = [e.to_dict() for e in upcoming]
+        venue_dict["upcoming_events"] = events_by_venue.get(venue.id, [])[:5]
         result.append(venue_dict)
 
     return jsonify(result)

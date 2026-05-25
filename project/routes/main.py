@@ -12,7 +12,7 @@ def index():
     categories = Category.query.order_by(Category.sort_order).all()
     districts = (
         db.session.query(Venue.district)
-        .filter(Venue.district.isnot(None))
+        .filter(Venue.district.isnot(None), Venue.district != "")
         .distinct()
         .order_by(Venue.district)
         .all()

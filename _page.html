@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Культурная карта Белгородской области</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-map-marked-alt"></i> Культурная карта 31
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Карта</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/venues/">Объекты</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/events/">Мероприятия</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/admin">Админ-панель</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    
+<div class="container-fluid p-0">
+  <div class="row g-0">
+    <div class="col-md-3 col-lg-2 bg-light p-3 border-end" id="sidebar">
+      <h5 class="mb-3"><i class="fas fa-filter"></i> Фильтры</h5>
+
+      <div class="mb-3">
+        <label class="form-label">Поиск</label>
+        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Название объекта...">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Категория</label>
+        <select id="category-filter" class="form-select form-select-sm">
+          <option value="">Все категории</option>
+          
+          <option value="1">Театры</option>
+          
+          <option value="2">Кинотеатры</option>
+          
+          <option value="3">Концертные залы</option>
+          
+          <option value="4">Филармонии</option>
+          
+          <option value="5">Стадионы и спорткомплексы</option>
+          
+          <option value="6">Дворцы культуры и клубы</option>
+          
+          <option value="7">Музеи и выставки</option>
+          
+          <option value="8">Фестивали и городские мероприятия</option>
+          
+          <option value="9">Библиотеки</option>
+          
+          <option value="10">Парки и зоны отдыха</option>
+          
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Район</label>
+        <select id="district-filter" class="form-select form-select-sm">
+          <option value="">Все районы</option>
+          
+          <option value=""></option>
+          
+          <option value="Алексеевский">Алексеевский</option>
+          
+          <option value="Белгород">Белгород</option>
+          
+          <option value="Белгородский">Белгородский</option>
+          
+          <option value="Валуйский">Валуйский</option>
+          
+          <option value="Грайворонский">Грайворонский</option>
+          
+          <option value="Губкинский">Губкинский</option>
+          
+          <option value="Корочанский">Корочанский</option>
+          
+          <option value="Красногвардейский">Красногвардейский</option>
+          
+          <option value="Краснояружский">Краснояружский</option>
+          
+          <option value="Новооскольский">Новооскольский</option>
+          
+          <option value="Прохоровский">Прохоровский</option>
+          
+          <option value="Старооскольский">Старооскольский</option>
+          
+          <option value="Чернянский">Чернянский</option>
+          
+          <option value="Шебекинский">Шебекинский</option>
+          
+          <option value="Яковлевский">Яковлевский</option>
+          
+          <option value="хутор Красный Восток">хутор Красный Восток</option>
+          
+        </select>
+      </div>
+
+      <button id="apply-filters" class="btn btn-primary btn-sm w-100 mb-2">Применить</button>
+      <button id="reset-filters" class="btn btn-outline-secondary btn-sm w-100">Сбросить</button>
+
+      <hr>
+      <h6 class="mb-2">Категории</h6>
+      <div id="legend">
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#e74c3c"></span>
+          <small>Театры</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#3498db"></span>
+          <small>Кинотеатры</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#2ecc71"></span>
+          <small>Концертные залы</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#9b59b6"></span>
+          <small>Филармонии</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#f39c12"></span>
+          <small>Стадионы и спорткомплексы</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#1abc9c"></span>
+          <small>Дворцы культуры и клубы</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#e67e22"></span>
+          <small>Музеи и выставки</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#e91e63"></span>
+          <small>Фестивали и городские мероприятия</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#795548"></span>
+          <small>Библиотеки</small>
+        </div>
+        
+        <div class="d-flex align-items-center mb-1">
+          <span class="legend-marker" style="background:#4caf50"></span>
+          <small>Парки и зоны отдыха</small>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="col-md-9 col-lg-10" id="map-container">
+      <div id="map"></div>
+    </div>
+  </div>
+</div>
+
+  </main>
+
+  <footer class="bg-dark text-light py-3 mt-4">
+    <div class="container text-center">
+      <small>
+        Культурная карта Белгородской области &copy; 2026 |
+        <a href="https://bel.cultreg.ru" class="text-light" target="_blank">Культурный регион</a>
+      </small>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/main.js"></script>
+  
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+
+<script>
+const CATEGORIES = [{"color": "#e74c3c", "icon": "fas fa-theater-masks", "id": 1, "name": "\u0422\u0435\u0430\u0442\u0440\u044b"}, {"color": "#3498db", "icon": "fas fa-film", "id": 2, "name": "\u041a\u0438\u043d\u043e\u0442\u0435\u0430\u0442\u0440\u044b"}, {"color": "#2ecc71", "icon": "fas fa-music", "id": 3, "name": "\u041a\u043e\u043d\u0446\u0435\u0440\u0442\u043d\u044b\u0435 \u0437\u0430\u043b\u044b"}, {"color": "#9b59b6", "icon": "fas fa-violin", "id": 4, "name": "\u0424\u0438\u043b\u0430\u0440\u043c\u043e\u043d\u0438\u0438"}, {"color": "#f39c12", "icon": "fas fa-futbol", "id": 5, "name": "\u0421\u0442\u0430\u0434\u0438\u043e\u043d\u044b \u0438 \u0441\u043f\u043e\u0440\u0442\u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0441\u044b"}, {"color": "#1abc9c", "icon": "fas fa-landmark", "id": 6, "name": "\u0414\u0432\u043e\u0440\u0446\u044b \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u044b \u0438 \u043a\u043b\u0443\u0431\u044b"}, {"color": "#e67e22", "icon": "fas fa-palette", "id": 7, "name": "\u041c\u0443\u0437\u0435\u0438 \u0438 \u0432\u044b\u0441\u0442\u0430\u0432\u043a\u0438"}, {"color": "#e91e63", "icon": "fas fa-star", "id": 8, "name": "\u0424\u0435\u0441\u0442\u0438\u0432\u0430\u043b\u0438 \u0438 \u0433\u043e\u0440\u043e\u0434\u0441\u043a\u0438\u0435 \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f"}, {"color": "#795548", "icon": "fas fa-book", "id": 9, "name": "\u0411\u0438\u0431\u043b\u0438\u043e\u0442\u0435\u043a\u0438"}, {"color": "#4caf50", "icon": "fas fa-tree", "id": 10, "name": "\u041f\u0430\u0440\u043a\u0438 \u0438 \u0437\u043e\u043d\u044b \u043e\u0442\u0434\u044b\u0445\u0430"}];
+const DISTRICTS = ["", "\u0410\u043b\u0435\u043a\u0441\u0435\u0435\u0432\u0441\u043a\u0438\u0439", "\u0411\u0435\u043b\u0433\u043e\u0440\u043e\u0434", "\u0411\u0435\u043b\u0433\u043e\u0440\u043e\u0434\u0441\u043a\u0438\u0439", "\u0412\u0430\u043b\u0443\u0439\u0441\u043a\u0438\u0439", "\u0413\u0440\u0430\u0439\u0432\u043e\u0440\u043e\u043d\u0441\u043a\u0438\u0439", "\u0413\u0443\u0431\u043a\u0438\u043d\u0441\u043a\u0438\u0439", "\u041a\u043e\u0440\u043e\u0447\u0430\u043d\u0441\u043a\u0438\u0439", "\u041a\u0440\u0430\u0441\u043d\u043e\u0433\u0432\u0430\u0440\u0434\u0435\u0439\u0441\u043a\u0438\u0439", "\u041a\u0440\u0430\u0441\u043d\u043e\u044f\u0440\u0443\u0436\u0441\u043a\u0438\u0439", "\u041d\u043e\u0432\u043e\u043e\u0441\u043a\u043e\u043b\u044c\u0441\u043a\u0438\u0439", "\u041f\u0440\u043e\u0445\u043e\u0440\u043e\u0432\u0441\u043a\u0438\u0439", "\u0421\u0442\u0430\u0440\u043e\u043e\u0441\u043a\u043e\u043b\u044c\u0441\u043a\u0438\u0439", "\u0427\u0435\u0440\u043d\u044f\u043d\u0441\u043a\u0438\u0439", "\u0428\u0435\u0431\u0435\u043a\u0438\u043d\u0441\u043a\u0438\u0439", "\u042f\u043a\u043e\u0432\u043b\u0435\u0432\u0441\u043a\u0438\u0439", "\u0445\u0443\u0442\u043e\u0440 \u041a\u0440\u0430\u0441\u043d\u044b\u0439 \u0412\u043e\u0441\u0442\u043e\u043a"];
+
+const map = L.map('map', { attributionControl: false }).setView([50.6, 36.6], 9);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '',
+  maxZoom: 18,
+}).addTo(map);
+
+const markers = L.markerClusterGroup({
+  chunkedLoading: true,
+  maxClusterRadius: 50,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+});
+map.addLayer(markers);
+
+const categoryColors = {};
+CATEGORIES.forEach(c => { categoryColors[c.id] = c.color; });
+
+function getColor(categoryId) {
+  return categoryColors[categoryId] || '#3388ff';
+}
+
+function loadMapData() {
+  const params = new URLSearchParams();
+  const catVal = document.getElementById('category-filter').value;
+  const distVal = document.getElementById('district-filter').value;
+  const searchVal = document.getElementById('search-input').value;
+  if (catVal) params.set('category_id', catVal);
+  if (distVal) params.set('district', distVal);
+  if (searchVal) params.set('search', searchVal);
+
+  markers.clearLayers();
+
+  fetch('/api/map-data?' + params.toString())
+    .then(r => r.json())
+    .then(data => {
+      data.forEach(venue => {
+        const color = getColor(venue.category_id);
+        const icon = L.divIcon({
+          html: `<div style="background:${color};width:24px;height:24px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3)"></div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
+          className: '',
+        });
+
+        let popupHtml = `<div style="min-width:200px">
+          <h6 style="margin-bottom:4px"><a href="/venues/${venue.id}">${venue.name}</a></h6>
+          <small class="text-muted">${venue.address || ''}</small>`;
+
+        if (venue.upcoming_events && venue.upcoming_events.length > 0) {
+          popupHtml += `<hr style="margin:6px 0"><strong>Ближайшие:</strong><ul style="margin:4px 0;padding-left:16px">`;
+          venue.upcoming_events.slice(0, 3).forEach(e => {
+            const d = new Date(e.date_start);
+            const dateStr = d.toLocaleDateString('ru-RU', {day:'numeric',month:'long'});
+            popupHtml += `<li><a href="/events/${e.id}" style="text-decoration:none">${e.title}</a> <small class="text-muted">${dateStr}</small></li>`;
+          });
+          popupHtml += `</ul>`;
+        }
+        popupHtml += `<hr style="margin:6px 0"><a href="/venues/${venue.id}" class="btn btn-sm btn-outline-primary">Подробнее</a>`;
+        popupHtml += `</div>`;
+
+        const marker = L.marker([venue.latitude, venue.longitude], { icon });
+        marker.bindPopup(popupHtml);
+        markers.addLayer(marker);
+      });
+    });
+}
+
+document.getElementById('apply-filters').addEventListener('click', loadMapData);
+document.getElementById('reset-filters').addEventListener('click', () => {
+  document.getElementById('category-filter').value = '';
+  document.getElementById('district-filter').value = '';
+  document.getElementById('search-input').value = '';
+  loadMapData();
+});
+document.getElementById('search-input').addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') loadMapData();
+});
+
+loadMapData();
+
+fetch('/static/belgorod_boundary.json')
+  .then(r => r.json())
+  .then(geo => {
+    L.geoJSON(geo, {
+      style: {
+        color: '#e74c3c',
+        weight: 3,
+        opacity: 0.9,
+        fillColor: '#e74c3c',
+        fillOpacity: 0.06,
+      },
+    }).addTo(map);
+  });
+</script>
+
+</body>
+</html>
